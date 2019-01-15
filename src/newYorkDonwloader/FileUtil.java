@@ -91,6 +91,27 @@ public class FileUtil {
 		ra.close();
 		return ret;
 	}
+	
+	public static boolean isGzip(File sourcedir) {
+		boolean ret = false;
+		try {
+			FileInputStream fin = new FileInputStream(sourcedir);
+			byte[] buf = new byte[2];
+			fin.read(buf);
+			int b = (buf[1] & 0xFF) << 8 | buf[0];
+			ret = b == GZIPInputStream.GZIP_MAGIC;
+			fin.close();
+		} catch (FileNotFoundException e) {
+			System.err.println(e.toString());
+			// e.printStackTrace();
+			return ret;
+		} catch (IOException e) {
+			System.err.println(e.toString());
+			// e.printStackTrace();
+			return ret;
+		}
+		return ret;
+	}
 
 	public static boolean unGzipFile(File sourcedir, File f) {
 		boolean ret = false;

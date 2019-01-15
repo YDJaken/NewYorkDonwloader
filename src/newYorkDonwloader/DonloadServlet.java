@@ -2,6 +2,9 @@ package newYorkDonwloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -50,7 +53,7 @@ public class DonloadServlet extends HttpServlet {
 				continue;
 			Detect401 as = null;
 			if (needTokan.equals("1")) {
-				as = HttpRequestUtil.postDownTerrain(urlbase + path + token, b);
+				as = HttpRequestUtil.postDownTerrain(urlbase + path + "?" + token, b);
 			} else if (needTokan.equals("0")) {
 				as = HttpRequestUtil.postDownTerrain(urlbase + path, b);
 			}
@@ -65,6 +68,7 @@ public class DonloadServlet extends HttpServlet {
 			if (as.getCode() == 404) {
 				b.deleteOnExit();
 				tmp.deleteOnExit();
+				System.out.println(urlbase + path + "    404");
 				continue;
 			}
 			if (as.getCode() == 500) {
@@ -79,11 +83,24 @@ public class DonloadServlet extends HttpServlet {
 				b.delete();
 				return;
 			}
-			/*
-			 * if (FileUtil.unGzipFile(b, a) == false) { response.getWriter().write("500");
-			 * response.getWriter().flush(); response.getWriter().close(); b.delete();
-			 * a.delete(); return; }
-			 */
+
+			if (FileUtil.isGzip(b)) {
+				File a = new File(Filebase + path + ".tmp");
+				if (!a.exists()) {
+					a.createNewFile();
+				}
+				if (FileUtil.unGzipFile(b, a) == false) {
+					response.getWriter().write("500");
+					response.getWriter().flush();
+					response.getWriter().close();
+					b.delete();
+					a.delete();
+					return;
+				}
+				Files.move(a.toPath(), b.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				a.deleteOnExit();
+			}
+
 		}
 		response.getWriter().write("200");
 		response.getWriter().flush();
