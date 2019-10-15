@@ -23,3 +23,7 @@ hs_err_pid*
 
 build/
 NewYorkDonwloader.iml
+.classpath
+.project
+.idea/
+.settings/
