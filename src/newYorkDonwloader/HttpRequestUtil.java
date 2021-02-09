@@ -31,8 +31,11 @@ public class HttpRequestUtil {
 	public static Detect401 postDownTerrain(String path, String token, File file) {
 		URL url = null;
 		try {
+			System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 			url = new URL(path);
 			HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+			httpURLConnection.setRequestProperty("Referer", "https://sandcastle.cesium.com/");
+			httpURLConnection.setRequestProperty("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI4YzhlYmM2OC1jZjQ0LTRhMTgtOWY1MS1jNmFiMjUxNjI1YjMiLCJpZCI6MjU5LCJhc3NldHMiOnsiNDA4NjYiOnsidHlwZSI6IjNEVElMRVMifX0sInNyYyI6IjEzYzE2NDA4LTQ4MjMtNDg0My05NDE2LTFkMmNkOTRhZjAwNiIsImlhdCI6MTYxMjgzMTA0NiwiZXhwIjoxNjEyODM0NjQ2fQ.5OtuCsg2FUhPmxksSdsrJO5TavzM96CAWzUZPuKW3mk");
 			httpURLConnection.setRequestMethod("GET");
 			httpURLConnection.setConnectTimeout(0);
 			httpURLConnection.setReadTimeout(0);
@@ -40,6 +43,7 @@ public class HttpRequestUtil {
 			httpURLConnection.setDoInput(true);
 			httpURLConnection.addRequestProperty("User-Agent",
 					"Mozilla/5.0 (X11; Linux x86_64 ) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36");
+			
 			int ResponseCode = httpURLConnection.getResponseCode();
 			switch (ResponseCode) {
 			case 200:
